@@ -39,4 +39,10 @@ export class AuthController {
   currentUser(@GetUser() user: User) {
     return user;
   }
+
+  @Post('/revoke-token')
+  @UseGuards(AuthGuard())
+  revokeAccessToken(@GetUser() user: User) {
+    return this.authService.revokeAccessToken(user);
+  }
 }

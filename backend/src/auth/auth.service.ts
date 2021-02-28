@@ -1,8 +1,13 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Response } from 'express';
 import { User } from 'src/entities/user.entity';
+import { getConnection } from 'typeorm';
 import { AuthCredentialDto } from './dto/authCredential.dto';
 import { UserRepository } from './repository/user.repository';
 
@@ -52,5 +57,16 @@ export class AuthService {
     );
 
     return { refreshToken, accessToken };
+  }
+
+  async revokeAccessToken(user: User) {
+    try {
+      await getConnection()
+        .getRepository(User)
+        .increment({ id: user.id }, 'tokenVersion', 1);
+      return { success: true };
+    } catch (error) {
+      throw new BadRequestException();
+    }
   }
 }
