@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Response } from 'express';
+import * as jwt from 'jsonwebtoken';
 import { User } from 'src/entities/user.entity';
 import { getConnection } from 'typeorm';
 import { AuthCredentialDto } from './dto/authCredential.dto';
@@ -65,6 +65,29 @@ export class AuthService {
         .getRepository(User)
         .increment({ id: user.id }, 'tokenVersion', 1);
       return { success: true };
+    } catch (error) {
+      throw new BadRequestException();
+    }
+  }
+
+  async getAccessToken(refreshToken: { refreshToken: string }) {
+    let payload: any;
+
+    if (!refreshToken) {
+      throw new BadRequestException();
+    }
+    try {
+      payload = await this.jwtService.verify(refreshToken.refreshToken, {
+        secret: 'secret',
+      });
+      const user = await this.userRepository.findOne({ id: payload.userId });
+      if (!user) {
+        throw new BadRequestException();
+      }
+      if (user.tokenVersion !== payload.tokenVersion) {
+        throw new BadRequestException();
+      }
+      return this.createTokens(user);
     } catch (error) {
       throw new BadRequestException();
     }
