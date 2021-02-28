@@ -18,7 +18,7 @@ import { AuthCredentialDto } from './dto/authCredential.dto';
 export class AuthController {
   constructor(private authService: AuthService) {}
 
-  @Post('signup')
+  @Post('/signup')
   signup(
     @Body(ValidationPipe) authCredentialDto: AuthCredentialDto,
   ): Promise<{ success: boolean }> {
