@@ -45,4 +45,11 @@ export class AuthController {
   revokeAccessToken(@GetUser() user: User) {
     return this.authService.revokeAccessToken(user);
   }
+
+  @Post('/refresh-token')
+  getAccessToken(
+    @Body() refreshToken: { refreshToken: string },
+  ): Promise<{ accessToken: string; refreshToken: string }> {
+    return this.authService.getAccessToken(refreshToken);
+  }
 }
