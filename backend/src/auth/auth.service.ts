@@ -70,14 +70,14 @@ export class AuthService {
     }
   }
 
-  async getAccessToken(refreshToken: { refreshToken: string }) {
+  async getAccessToken(refreshToken: string) {
     let payload: any;
 
     if (!refreshToken) {
       throw new BadRequestException();
     }
     try {
-      payload = await this.jwtService.verify(refreshToken.refreshToken, {
+      payload = await this.jwtService.verify(refreshToken, {
         secret: 'secret',
       });
       const user = await this.userRepository.findOne({ id: payload.userId });
