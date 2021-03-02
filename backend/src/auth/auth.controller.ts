@@ -48,7 +48,7 @@ export class AuthController {
 
   @Post('/refresh-token')
   getAccessToken(
-    @Body() refreshToken: { refreshToken: string },
+    @Body('refreshToken') refreshToken: string, //extract keys of refreshToken
   ): Promise<{ accessToken: string; refreshToken: string }> {
     return this.authService.getAccessToken(refreshToken);
   }
